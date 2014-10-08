@@ -21,7 +21,7 @@ Vehicle *newCar = [Vehicle alloc] init];
 Porsche *new911Model = (Porsche *)newCar;
 ```
 
-In the above code snippet, we have initialized a new Vehicle, and cast it as a Porsche by adding the `(Porsche *)` in front of the Vehicle object. Casting a general object to be a more specific type of object is called downcasting. As far as the compiler is concerned now, we can use the new911Model as a Porsche, even though it is actually only a Vehicle. That does not mean, however, that the behavior of new911Model will be exactly the same as it would be if we had initialized a Porsche. So, here are the major distinctions in behavior:
+In the above code snippet, we have initialized a new `Vehicle`, and cast it as a Porsche by adding the `(Porsche *)` in front of the `Vehicle` object. Casting a general object to be a more specific type of object is called downcasting. As far as the compiler is concerned now, we can use the `new911Model` as a `Porsche`, even though it is actually only a Vehicle. That does not mean, however, that the behavior of `new911Model` will be exactly the same as it would be if we had initialized a `Porsche`. So, here are the major distinctions in behavior:
 
 
 - When the same method is defined in both parent class and child class, downcasting an object will result in the parent's method implementation being called.
@@ -32,7 +32,7 @@ In the above code snippet, we have initialized a new Vehicle, and cast it as a P
 
 - In both situations, you can expect that methods in the child class (and only in the child class) will NOT run. Either, they will cause an error in the compiler in the case of downcasting, or they will cause an error at runtime, as in the case of upcasting.
 
-It is also possible to cast in-line by putting parentheses around an object. For instance, if we had a Car object and a Porsche object, and the Porsche object had a property called isTurboCharged. The following would work:
+It is also possible to cast in-line by putting parentheses around an object. For instance, if we had a `Car` object and a `Porsche` object, and the `Porsche` object had a property called `isTurboCharged`. The following would work:
 
 ```
 FISCar *newCar = [FISPorsche alloc] init];
@@ -66,7 +66,7 @@ Let's say we attempt to call `engageWarpDrive` on any old `FISCar` as opposed to
 [FISCar engageWarpDrive];
 ```
 
-Given only an FISTrekkyCar (a subclass of FISCar) has the method `engageWarpDrive`, we can expect to see the following error in our debugger:
+Given only an `FISTrekkyCar` (a subclass of `FISCar`) has the method `engageWarpDrive`, we can expect to see the following error in our debugger:
 
 ```
 *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '-[FISCar engageWarpDrive]: unrecognized selector sent to instance 0x7fde0be0fd10'
