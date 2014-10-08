@@ -2,7 +2,7 @@
 
 ##What problem are we solving?
 
-Often times, we are provided with an object that is typed `id` (effectively, unknown type.) Classic examples: The contents of NSArray and NSDictionary are not known to the compiler. In such cases, the compiler / linter will complain if we attempt to use object-specific methods, convenience initializers, or object literals, even if the underlying object is of the appropriate type to use those tools. How might we stop the compiler / linter from complaining?
+Often times, we are provided with an object that is typed `id` (effectively, unknown type.) Classic examples: The contents of `NSArray` and `NSDictionary` are not known to the compiler. In such cases, the compiler / linter will complain if we attempt to use object-specific methods, convenience initializers, or object literals, even if the underlying object is of the appropriate type to use those tools. How might we stop the compiler / linter from complaining?
 
 Other times we are provided with an object that has methods that override its superclass's methods. But what if we want access to the superclass's method implementation?
 
@@ -13,7 +13,7 @@ Casting is the process of transforming one object type into another object type.
 
 ##How to cast.
 
-The syntax for casting is simple. Assume for this example that we have a project with two classes, Vehicle and Porsche. Porsche is a subclass of the Vehicle class.
+The syntax for casting is simple. Assume for this example that we have a project with two classes, `Vehicle` and `Porsche`. `Porsche` is a subclass of the `Vehicle` class.
 
 
 ```
