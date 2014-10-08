@@ -69,5 +69,7 @@ Let's say we attempt to call `engageWarpDrive` on any old `FISCar` as opposed to
 Given only an `FISTrekkyCar` (a subclass of `FISCar`) has the method `engageWarpDrive`, we can expect to see the following error in our debugger:
 
 ```
-*** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '-[FISCar engageWarpDrive]: unrecognized selector sent to instance 0x7fde0be0fd10'
+*** Terminating app due to uncaught exception 'NSInvalidArgumentException',
+ reason: '-[FISCar engageWarpDrive]: unrecognized selector sent to instance 
+ 0x7fde0be0fd10'
 ```
