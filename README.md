@@ -1,53 +1,123 @@
 # Casting
 
+## Objectives
+
+1. Learn the purpose and forms of casting values.
+2. Recognize the different use-cases for casting primitives and objects.
+
 ## What Problem Does Casting Solve?
 
-Often times, we are provided with an object that is typed `id` (effectively, unknown type.) Classic examples: The contents of `NSArray` and `NSDictionary` are not known to the compiler. In such cases, the compiler will complain if we attempt to use object-specific methods, convenience initializers, or object literals, even if the underlying object is of the appropriate type to use those tools. How might we stop the compiler from complaining?
+Often times, we are provided with a value that is not *quite* the type we want. Usually, this takes the form of an object that is typed `id` (effectively "unknown object type"). The classic example is methods that access elements of arrays and dictionaries. The contents of `NSArray` and `NSDictionary` are not known to the compiler, so many methods that manipulate collections have no choice but to operate with the `id` type. As we've seen, that situation is a bit tricky, since the compiler will just trust that you know what you're doing when calling methods on something with type `id`. For example:
 
-Other times we are provided with an object that has methods that override its superclass's methods. But what if we want access to the superclass's method implementation?
+```objc
+NSDictionary *userInfo = @{
+    @"name": @"Tim",
+    @"age": @12,
+    @"favoriteColors": @[ @"red", @"green", @"blue" ]
+};
+
+id age = userInfo[@"age"];
+NSLog(@"%@", [age uppercaseString]);
+``` 
+
+Xcode just assumes that we actually wanted to call `uppercaseString` on `age`, and will let this compile, even though `age` is actually an `NSNumber`. This will result in a crash at runtime -- good old `unrecognized selector sent to instance`.
+
+There is yet another annoyance with `id`: the compiler disallows dot-notation on variables with that type. Check it out:
+
+```objc
+id name = userInfo[@"name"];
+NSLog(@"%@", name.uppercaseString);
+
+// or...
+
+NSLog(@"%@", userInfo[@"name"].uppercaseString);
+```
+
+Both of these result in the same error: `Property 'uppercaseString' not found on object of type 'id'`. Ugh.
+
+
+So, what's a budding young programmer to do? How do we force the compiler to interpret a value as a different type? Cast!
 
 
 ## What Is Casting?
 
-Casting is the process of transforming one object type into another object type. Casting communicates to the compiler and linter that we would like to have access to features such as an object's methods and literal syntax if applicable and that we explicitly know that it will be okay to use them and will not crash the program. But words of warning: Casting is a quick way to runtime errors given that we are effectively telling the compiler  that "we know better." That means our app may crash when in use if casting is poorly applied. Be extra thoughtful when casting!
+**Casting** is the act of forcing the compiler to interpret a value as a specific type. For instance, we could *cast* `age` in the previous code to an `NSNumber *` so that we can use dot-syntax and get the usual compiler niceties (such a compiler error when we try to do the impossible, like capitalize an `NSNumber`!).
+
+Casting lets us fill the compiler in on details it couldn't possibly know. But, a word of warning: casting is a quick way to get runtime errors if we happen to mess up. **Casts between types almost *always* compile**, even if they're nonsensical. So it's perfectly valid to cast, say, an `NSNumber` to an `NSString`, only to crash when you try to run string methods on the `NSNumber`.
+
+**Don't confuse casting objects with converting between types!** Casting doesn't actually change the type of the object being cast, it just asks the compiler to treat the value as a different type. For example, casting an `NSNumber` to an `NSString` doesn't get you the string version of the number, it just gets you a string variable that actually holds a number. That's a recipe for a crash.
+
 
 ## How To Cast
 
-The syntax for casting is simple. Assume for this example that we have a project with two classes, `FISVehicle` and `FISPorsche`. `FISPorsche` is a subclass of the `FISVehicle` class.
+There are two types of casts: implicit and explicit. **Implicit casts** happen whenever you assign a value to a different type of variable:
 
 ```objc
-FISVehicle *newCar = [FISVehicle alloc] init];
-FISPorsche *new911Model = (FISPorsche *)newCar;
+NSString *name = userInfo[@"name"];
 ```
 
-In the above code snippet, we have initialized a new `FISVehicle`, and cast it as a `FISPorsche` by adding `(FISPorsche *)` in front of the `FISVehicle` object. Casting a general object to be a more specific type of object is called downcasting. As far as the compiler is concerned, we can use the `new911Model` as a `FISPorsche`, even though it is actually only a `FISVehicle`. That does not mean, however, that the behavior of `new911Model` will be exactly the same as it would be if we had initialized a `FISPorsche`. So, here are the major distinctions in behavior:
+Even though the dictionary access will return a value of type `id`, this is a valid statement. The `id` is implicitly cast to an `NSString` and assigned to the variable `name`. We are now free to use dot syntax or anything else we're used to with an `NSString *` variable. This type of casting only works when the value being cast is of type `id` or the compiler can guarantee that the cast makes sense.
 
-
-- When the same method is defined in both parent class and the child class, downcasting an object will result in the parent's method implementation being called.
-
-
-- On the contrary, when upcasting, if the same method is defined in both the parent class and the child class, upcasting will result in the child's method being called.
-
-
-- In both situations, you can expect that methods in the child class (and only in the child class) will NOT run. Either, they will cause an error in the compiler in the case of downcasting, or they will cause an error at runtime, as in the case of upcasting.
-
-It is also possible to cast in-line by putting parentheses around an object. For instance, if we had a `FISCar` object and a `FISPorsche` object, and the `FISPorsche` object had a property called `isTurboCharged`. The following would work:
+**Explicit casts** are needed when the value being cast is not of type `id`, or when the compiler can't guarantee that you're doing something sane. Assume for this example that we have two classes, `Vehicle` and `Boat`. `Boat` is a subclass of the `Vehicle` class. If we have a variable of type `Vehicle`, but we are *sure* it's actually a `Boat` (maybe we called `-isKindOfClass:` to check), we can have the compiler reinterpret the value like this:
 
 ```objc
-FISCar *newCar = [FISPorsche alloc] init];
-((FISPorsche *)newCar).isTurboCharged = YES;
+Vehicle *vehicleThatIsActuallyABoat = ...;  // Maybe this was an argument
+// [vehicleThatIsActuallyABoat dropAnchor];  // This would be an error, since at this point the compiler only knows that this is a Vehicle, which does't have a method to drop an anchor
+
+Boat *boat = (Boat *)vehicleThatIsActuallyABoat;
+[boat dropAnchor];  // That's better! Boats can actually do that.
+```
+
+In the above code snippet, we have asked the compiler to treat `vehicleThatIsActuallyABoat` as a `Boat` by adding the `(Boat *)` in front of the `Vehicle` value. That lets us call methods that belong exclusively to boats, like `dropAnchor`.
+
+Remember that no real work actually happened! The cast effectively fills the compiler in on the fact that we have a `Boat` and that it should let us call `Boat`-specific stuff on the value. `vehicleThatIsActuallyABoat` and `boat` are the *exact same object*.
+
+
+It is also possible to cast in-line by putting parentheses around the whole expression. For instance:
+
+```objc
+[((Boat *)vehicleThatIsActuallyABoat) dropAnchor];
 ```
 
 
-## Unexpected behaviors
+### Downcasting and upcasting
+
+The cast we just saw, from a `Vehicle` to a more specific subclass of it (namely `Boat`) is a **downcast**. It is a cast *down* the tree of inheritance.
+
+We can also cast upwards, toward the superclass. This is (surprise!) an **upcast**. For example:
+
+```objc
+Vehicle *vehicleThatIsActuallyABoat = (Vehicle *)boat;
+
+// or, since the compiler knows this will work, we can do this implicitly:
+
+Vehicle *vehicleThatIsActuallyABoat = boat;
+```
+
+Yet again, no real work actually happened! The upcast just causes the compiler to reinterpret the `Boat` as a `Vehicle`, thus cutting us off from `Boat`-specific stuff on the value. `vehicleThatIsActuallyABoat` and `boat` are still the *exact same object*. Calling methods on `vehicleThatIsActuallyABoat` that are also in `Vehicle` will result in the boat implementations being executed:
+
+```objc
+BOOL waterVehicle = vehicleThatIsActuallyABoat.canTravelOnWater;  // This will be YES (i.e., Boat's implementation) even though we called it on a thing that is typed as a Vehicle.
+```
+
+
+## Casting Primitives
+
+All of the examples we've seen so far have been casts between object types. We can also cast primitive values (`NSInteger`, `BOOL`, etc.) to convert their types. **Unlike casts between object types, casts between primitives actually convert values!** For instance, casting a `CGFloat` to an `NSInteger` truncates the value (i.e., it removes the decimal part):
+
+```objc
+CGFloat pi = 3.14159;
+NSInteger piInIndiana = (NSInteger)pi;  // This is 3. See https://en.wikipedia.org/wiki/Indiana_Pi_Bill
+``` 
 
 ### Integer Division
 
-A fairly common situation is the division of two integers that result in a floating point number. Take the following example:
+A fairly common use case for primitive casting arises when dividing two integers. This operation (e.g. `9 / 4`) is defined to return another integer, *not* a floating-point number. This oddity can cause issues if you're not expecting it. Take the following example:
 
 ```objc
-CGFloat result = 9 / 4;
+CGFloat result = 9/4;
 ```
+
 If we were to write the above formula, `result` would evaluate to the integer value `2`, truncating the decimal value. This case is solved easily enough by writing one of the operands as a float value:
 
 ```objc
@@ -77,23 +147,3 @@ CGFloat result = (CGFloat)a / (CGFloat)b;
 The `result` variable will now successfully capture `2.25`.
 
 **Note:** *Casting floats values or other primitives does not employ the* `*` *character.*
-
-
-## Common Error Messages
-
-
-Let's say we have another subclass of `FISCar` called `FISTrekkyCar` that has a new method called `engageWarpDrive`. What happens if we downcast a `FISCar` to a `FISTrekkyCar` and attempt to call `engageWarpDrive` on it?
-
-```objc
-FISTrekkyCar *enterprise = (FISTrekkyCar *)[[FISCar alloc] init];
-
-[enterprise engageWarpDrive];
-```
-
-Since the `enterprise` object was initialized as a `FISCar` and is not actually a `FISTrekkyCar` which is that class that can receive a call of the `engageWarpDrive` method, the following error will print in the debug console: 
-
-```
-*** Terminating app due to uncaught exception 'NSInvalidArgumentException',
- reason: '-[FISCar engageWarpDrive]: unrecognized selector sent to instance 
- 0x7fde0be0fd10'
-```
