@@ -41,7 +41,7 @@ So, what's a budding young programmer to do? How do we force the compiler to int
 
 ## What Is Casting?
 
-**Casting** is the act of forcing the compiler to interpret a value as a specific type. For instance, we could *cast* `age` in the previous code to an `NSNumber *` so that we can use dot-syntax and get the usual compiler niceties (such a compiler error when we try to do the impossible, like capitalize an `NSNumber`!).
+**Casting** is the act of forcing the compiler to interpret a value as a specific type. For instance, we could *cast* `age` in the previous code to an `NSNumber *` so that we can use dot-syntax and get the usual compiler niceties (such as a compiler error when we try to do the impossible, like capitalize an `NSNumber`!).
 
 Casting lets us fill the compiler in on details it couldn't possibly know. But, a word of warning: casting is a quick way to get runtime errors if we happen to mess up. **Casts between types almost *always* compile**, even if they're nonsensical. So it's perfectly valid to cast, say, an `NSNumber` to an `NSString`, only to crash when you try to run string methods on the `NSNumber`.
 
