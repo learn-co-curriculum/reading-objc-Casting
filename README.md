@@ -147,3 +147,5 @@ CGFloat result = (CGFloat)a / (CGFloat)b;
 The `result` variable will now successfully capture `2.25`.
 
 **Note:** *Casting floats values or other primitives does not employ the* `*` *character.*
+
+<a href='https://learn.co/lessons/reading-objc-Casting' data-visibility='hidden'>View this lesson on Learn.co</a>
