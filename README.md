@@ -148,4 +148,4 @@ The `result` variable will now successfully capture `2.25`.
 
 **Note:** *Casting floats values or other primitives does not employ the* `*` *character.*
 
-<a href='https://learn.co/lessons/reading-objc-Casting' data-visibility='hidden'>View this lesson on Learn.co</a>
+<p data-visibility='hidden'>View <a href='https://learn.co/lessons/reading-objc-Casting' title='Casting'>Casting</a> on Learn.co and start learning to code for free.</p>
